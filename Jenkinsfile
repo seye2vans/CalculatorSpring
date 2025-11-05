@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     triggers {
-        // Run every 5 minutes
-        cron('H/5 * * * *')
+        // Run once every day at 12:25 PM
+        cron('25 12 * * *')
     }
 
     stages {
@@ -15,7 +15,6 @@ pipeline {
 
         stage("Compile & Package") {
             steps {
-                // Navigate to folder containing pom.xml
                 dir('calculator') {
                     bat "mvn clean package"
                 }
@@ -33,7 +32,6 @@ pipeline {
         stage("Code Coverage") {
             steps {
                 dir('calculator') {
-                    // Generate JaCoCo report and verify thresholds
                     bat "mvn jacoco:report"
                     bat "mvn verify"
                 }
@@ -43,10 +41,8 @@ pipeline {
 
     post {
         always {
-            // Archive coverage reports for Jenkins dashboard
             archiveArtifacts artifacts: 'calculator/target/site/jacoco/**', fingerprint: true
 
-            // Publish JaCoCo coverage in Jenkins (if plugin installed)
             jacoco execPattern: 'calculator/target/jacoco.exec',
                    classPattern: 'calculator/target/classes',
                    sourcePattern: 'calculator/src/main/java',
