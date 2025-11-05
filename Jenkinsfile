@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        // Run once every day at 12:25 PM
+        // Runs every day at 12:25 PM
         cron('25 12 * * *')
     }
 
@@ -50,33 +50,49 @@ pipeline {
         }
 
         success {
-            emailext(
-                subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-                Good news! 🎉
-                The Jenkins build for *${env.JOB_NAME}* completed successfully.
+            script {
+                emailext(
+                    subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
+                    <h2>🎉 Build Successful!</h2>
+                    <p>The Jenkins build for <b>${env.JOB_NAME}</b> completed successfully.</p>
 
-                📦 Build Number: ${env.BUILD_NUMBER}
-                📅 Date: ${new Date()}
-                🔗 View build details: ${env.BUILD_URL}
-                """,
-                to: "seyeolaleye06@gmail.com"
-            )
+                    <ul>
+                        <li><b>Build Number:</b> ${env.BUILD_NUMBER}</li>
+                        <li><b>Date:</b> ${new Date()}</li>
+                        <li><b>Status:</b> SUCCESS ✅</li>
+                        <li><b>Triggered by:</b> ${currentBuild.getBuildCauses()[0].userName ?: "Scheduled Trigger"}</li>
+                    </ul>
+
+                    <p><a href="${env.BUILD_URL}">🔗 View Build Details</a></p>
+                    """,
+                    to: "seyeolaleye06@gmail.com",
+                    mimeType: "text/html"
+                )
+            }
         }
 
         failure {
-            emailext(
-                subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-                Uh oh 😕
-                The Jenkins build for *${env.JOB_NAME}* has failed.
+            script {
+                emailext(
+                    subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
+                    <h2>⚠️ Build Failed!</h2>
+                    <p>The Jenkins build for <b>${env.JOB_NAME}</b> failed.</p>
 
-                📦 Build Number: ${env.BUILD_NUMBER}
-                📅 Date: ${new Date()}
-                🔗 Check the logs here: ${env.BUILD_URL}
-                """,
-                to: "seyeolaleye06@gmail.com.com"
-            )
+                    <ul>
+                        <li><b>Build Number:</b> ${env.BUILD_NUMBER}</li>
+                        <li><b>Date:</b> ${new Date()}</li>
+                        <li><b>Status:</b> FAILURE ❌</li>
+                        <li><b>Triggered by:</b> ${currentBuild.getBuildCauses()[0].userName ?: "Scheduled Trigger"}</li>
+                    </ul>
+
+                    <p><a href="${env.BUILD_URL}">🔗 View Build Logs</a></p>
+                    """,
+                    to: "seyeolaleye06@gmail.com",
+                    mimeType: "text/html"
+                )
+            }
         }
     }
 }
