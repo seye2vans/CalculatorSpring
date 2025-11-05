@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    triggers {
+        // Run every 5 minutes
+        cron('H/5 * * * *')
+    }
+
     stages {
         stage("Checkout") {
             steps {
@@ -41,7 +46,7 @@ pipeline {
             // Archive coverage reports for Jenkins dashboard
             archiveArtifacts artifacts: 'calculator/target/site/jacoco/**', fingerprint: true
 
-            // If Jenkins has JaCoCo plugin installed:
+            // Publish JaCoCo coverage in Jenkins (if plugin installed)
             jacoco execPattern: 'calculator/target/jacoco.exec',
                    classPattern: 'calculator/target/classes',
                    sourcePattern: 'calculator/src/main/java',
