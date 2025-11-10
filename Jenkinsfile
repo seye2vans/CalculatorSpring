@@ -39,42 +39,17 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            archiveArtifacts artifacts: 'calculator/target/site/jacoco/**', fingerprint: true
+   post {
+  success {
+    emailext subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+             body: "Build succeeded! View at ${env.BUILD_URL}",
+             to: "seyeolaleye06@gmail.com"
+  }
+  failure {
+    emailext subject: "❌ FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+             body: "Build failed! Check logs at ${env.BUILD_URL}",
+             to: "seyeolaleye06@gmail.com"
+  }
+}
 
-            jacoco execPattern: 'calculator/target/jacoco.exec',
-                   classPattern: 'calculator/target/classes',
-                   sourcePattern: 'calculator/src/main/java',
-                   exclusionPattern: '**/test/**'
-        }
-
-        success {
-            emailext(
-                subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """Good news 🎉
-
-Build for *${env.JOB_NAME}* completed successfully.
-
-📦 Build #: ${env.BUILD_NUMBER}
-🕒 Time: ${new Date()}
-🔗 View details: ${env.BUILD_URL}
-                """,
-                to: "seyeolaleye06@gmail.com"
-            )
-        }
-
-        failure {
-            emailext(
-                subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """Build failed 😕
-
-📦 Build #: ${env.BUILD_NUMBER}
-🕒 Time: ${new Date()}
-🔗 Logs: ${env.BUILD_URL}
-                """,
-                to: "seyeolaleye06@gmail.com"
-            )
-        }
-    }
 }
